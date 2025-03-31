@@ -1,4 +1,4 @@
-from models.patientbuilder import PatientBuilder
+from models.patientprofile import PatientProfile
 from repositories.patients import Patients
 
 
@@ -8,7 +8,7 @@ class PatientService:
 
     def register_as_patient(self, name : str, email : str, password : str, dob : str):
         patient = (
-            PatientBuilder()
+            PatientProfile()
             .set_id()
             .set_patient_name(name)
             .set_patient_email(email)

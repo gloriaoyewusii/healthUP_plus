@@ -1,9 +1,7 @@
-class Doctor:
-    def __init__(self):
-        self.doctor_id = 0
-        self.doctor_name = ""
-        self.doctor_email = ""
-        self.doctor_password = None
-        self.doctor_specialisation = ""
-        self.doctor_dob = ""
+from mongoengine import Document, StringField, EmailField
+class Doctor(Document):
+    doctor_name = StringField(required=True)
+    doctor_email = EmailField(required=True, unique=True)
+    doctor_password = StringField(required=True)
+    doctor_specialty = StringField(required=True)
 

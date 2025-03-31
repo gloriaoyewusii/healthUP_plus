@@ -1,11 +1,11 @@
 from unittest import TestCase
 
-from models.patientbuilder import PatientBuilder
+from models.patientprofile import PatientProfile
 from repositories.patients import Patients
 
 class TestPatientRepository(TestCase):
     def test_that_patient_repository_stores_patient_information(self):
-        patient_builder = PatientBuilder()
+        patient_builder = PatientProfile()
         patients = Patients()
 
         patient_builder.set_patient_name("A B")
