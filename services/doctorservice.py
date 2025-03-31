@@ -1,4 +1,4 @@
-from models.doctorbuilder import DoctorBuilder
+from models.doctorprofile import DoctorProfile
 from repositories.doctors import Doctors
 
 
@@ -8,7 +8,7 @@ class DoctorService:
 
     def register_as_doctor(self, name : str, email : str, password : str, specialisation : str, dob : str):
         doctor = (
-            DoctorBuilder()
+            DoctorProfile()
             .set_id()
             .set_doctor_name(name)
             .set_doctor_email(email)
