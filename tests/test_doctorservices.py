@@ -17,8 +17,12 @@ class TestDoctorServices(TestCase):
         doctor_service.create_appointment_time("Mark Zuck", "Wednesday", datetime.datetime(2025, 4, 1, 11, 30))
         doctor_service.create_appointment_time("Mark Zuck", "Friday", datetime.datetime(2025, 4, 3, 12, 00))
 
-    def test_that_doctor_can_view_created_appointment_timelines(self):
+    def test_that_doctor_can_view_all_created_appointment_timelines(self):
         doctor_service = DoctorService()
         doctor_service.create_appointment_time("Jade Sola", "Wednesday", datetime.datetime(2025, 4, 1, 10, 40))
         doctor_service.create_appointment_time("Jade Sola", "Friday", datetime.datetime(2025, 4, 3, 12, 35))
-        print(doctor_service.view_created_appointments("Jade Sola"))
+        doctor_service.view_weekly_appointments_for("Jade Sola")
+
+    def test_that_doctor_appointments_for_a_specific_day(self):
+        doctor_service = DoctorService()
+        doctor_service.view_daily_appointments_for("Jade Sola", "Wednesday")

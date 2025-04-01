@@ -4,6 +4,7 @@ from data.models.doctors import Doctors
 from data.models.patients import Patients
 from data.models.appointments import Appointment
 from repositories.patientsrepository import PatientsRepository
+from services.doctorservice import DoctorService
 
 
 class PatientService:
@@ -19,5 +20,5 @@ class PatientService:
     @staticmethod
     def view_available_appointments_of_doctor(doctor_name):
         doctor = Doctors.objects.get(doctor_name=doctor_name)
-        appointments = doctor.doctor_appointment_details
-        return appointments
+        if doctor is not None:
+            DoctorService.view_weekly_appointments_for(doctor_name)

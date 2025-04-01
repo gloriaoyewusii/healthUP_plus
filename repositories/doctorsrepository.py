@@ -1,3 +1,5 @@
+import datetime
+
 from mongoengine import connect
 
 from data.models.appointments import Appointment
@@ -38,5 +40,5 @@ class DoctorsRepository:
         return all_doctors
 
     @staticmethod
-    def save_doctors_open_appointment(doctor_name, appointment_day, appointment_date):
+    def save_doctors_open_appointment(doctor_name, appointment_day, appointment_date : datetime):
         Doctors.objects(doctor_name=doctor_name).update(push__doctor_appointment_details=Appointment(day=appointment_day, date=appointment_date))

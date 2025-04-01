@@ -37,17 +37,30 @@ class DoctorService:
         #     print(e)
 
     @staticmethod
-    def view_created_appointments(doctor_name):
-        doctor = Doctors.objects.get(doctor_name=doctor_name)
-        appointments = []
-        length = len(doctor.doctor_appointment_details)
-        for index in range(length):
-            appointments.append(doctor.doctor_appointment_details[index])
-        return appointments
+    def view_weekly_appointments_for(doctor_name):
+        dokie = Doctors.objects.get(doctor_name=doctor_name)
+        # print(dokie.doctor_appointment_details[0].date)
+        weekly_appointments = []
+        for index in range(len(dokie.doctor_appointment_details)):
+            weekly_appointments.append(dokie.doctor_appointment_details[index].day)
+            weekly_appointments.append(dokie.doctor_appointment_details[index].date)
+        print(weekly_appointments)
+        return weekly_appointments
+
 
 
 
     def __str__(self):
         return f"Name: {Doctors.doctor_name}\nEmail: {Doctors.doctor_email}\nPassword: {Doctors.doctor_password}"
+
+    @staticmethod
+    def view_daily_appointments_for(doctor_name, appointment_day):
+        doctor = Doctors.objects.get(doctor_name=doctor_name, doctor_appointment_details__day=appointment_day)
+        day_appointments = []
+        for index in range(len(doctor.doctor_appointment_details)):
+            if doctor.doctor_appointment_details[index].day == appointment_day:
+                day_appointments.append(doctor.doctor_appointment_details[index].date)
+        print(day_appointments)
+        return day_appointments
 
 
