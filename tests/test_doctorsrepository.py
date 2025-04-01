@@ -1,24 +1,21 @@
 from unittest import TestCase
-
-from models.doctorprofile import DoctorProfile
-from repositories.doctors import Doctors
+from data.models.doctors import Doctors
+from repositories.doctorsrepository import DoctorsRepository
 
 class TestDoctorRepository(TestCase):
     def test_that_doctor_repository_stores_doctor_information(self):
-        doctor_builder = DoctorProfile()
-        doctors = Doctors()
-
-        doctor_builder.set_doctor_name("Gloria O")
-        doctor_builder.set_doctor_dob("01/01/1992")
-        doctor_builder.set_doctor_email("glow@gmail.com")
-        doctor_builder.set_doctor_password("pass@WO1")
-        doctor_builder.set_doctor_specialisation("Neurosurgeon")
-        doctor_builder.set_id()
-        doctor = doctor_builder.build()
-        doctors.save_doctor_to_repo(doctor)
-
-
-    def test_that_stored_doctor_information_can_be_retrieved(self):
-        doctors = Doctors()
-        self.assertIsNotNone(doctors.find_doctor_by_id(1))
-        self.assertEqual("glow@gmail.com", doctors.find_doctor_by_id(1)["doctor_email"])
+        doctor = Doctors(doctor_name="John Doe", doctor_email="do_ja091@gmail.com", doctor_password="jDoE@123", doctor_specialty="Optician")
+        DoctorsRepository.save_doctor_to_repo(doctor)
+        self.assertIsNotNone(doctor)
+    def test_that_doctor_john_doe_details_can_be_retrieved_from_repository_by_id(self):
+        self.assertEqual("John Doe", DoctorsRepository.find_doctor_by_id("67eb7d1645acd7d8bbe20156"))
+    def test_that_multiple_doctors_with_same_email_cannot_be_added_to_repository(self):
+        doctor_jade = Doctors(doctor_name="Jade Sola", doctor_email="jade@gmail.com", doctor_password="password", doctor_specialty="Doctor")
+        DoctorsRepository.save_doctor_to_repo(doctor_jade)
+        self.assertIsNotNone(doctor_jade)
+        with self.assertRaises(Exception):
+            doctor_phil = Doctors(doctor_name="Phil Jones", doctor_email="jade@gmail.com", doctor_password="passNword", doctor_specialty="Biomedical Doctor")
+            DoctorsRepository.save_doctor_to_repo(doctor_phil)
+            self.assertIsNone(doctor_phil)
+    def test_that_doctor_jade_details_can_be_retrieved_from_repo_by_email(self):
+        self.assertEqual("Jade Sola", DoctorsRepository.find_doctor_by_email("jade@gmail.com"))

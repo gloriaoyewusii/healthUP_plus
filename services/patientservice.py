@@ -1,5 +1,5 @@
-from models.patientprofile import PatientProfile
-from repositories.patients import Patients
+from data.models import PatientProfile
+from repositories.patientsrepository import Patients
 
 
 class PatientService:

@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from models.patientprofile import PatientProfile
-from repositories.patients import Patients
+from data.models import PatientProfile
+from repositories.patientsrepository import Patients
 
 class TestPatientRepository(TestCase):
     def test_that_patient_repository_stores_patient_information(self):

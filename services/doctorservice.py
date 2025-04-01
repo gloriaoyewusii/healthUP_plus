@@ -1,24 +1,17 @@
-from models.doctorprofile import DoctorProfile
-from repositories.doctors import Doctors
+from data.models.doctors import Doctors
+from repositories.doctorsrepository import DoctorsRepository
 
 
 class DoctorService:
-    def __init__(self):
-        self.doctors = Doctors()
 
-    def register_as_doctor(self, name : str, email : str, password : str, specialisation : str, dob : str):
-        doctor = (
-            DoctorProfile()
-            .set_id()
-            .set_doctor_name(name)
-            .set_doctor_email(email)
-            .set_doctor_password(password)
-            .set_doctor_specialisation(specialisation)
-            .set_doctor_dob(dob)
-            .build()
-        )
-        self.doctors.save_doctor_to_repo(doctor)
+    @staticmethod
+    def register_as_doctor(name : str, email : str, password : str, specialisation : str):
+        doctor = Doctors(name, email, password, specialisation)
+        try:
+            DoctorsRepository.save_doctor_to_repo(doctor)
+        except Exception as e:
+            print(e)
 
-    def find_doctor_by_email(self, param):
-        pass
+    # def create_appointment_timelines(self, date, time):
+    #
 
