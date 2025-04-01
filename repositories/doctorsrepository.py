@@ -30,5 +30,8 @@ class DoctorsRepository:
 
     @staticmethod
     def find_all_doctors():
-        doctors = Doctors.objects.all()
-        return doctors
+        all_doctors = []
+        doctors = Doctors.objects()
+        for doctor in doctors:
+            all_doctors.append(doctor.doctor_name)
+        return all_doctors

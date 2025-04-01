@@ -19,3 +19,7 @@ class TestDoctorRepository(TestCase):
             self.assertIsNone(doctor_phil)
     def test_that_doctor_jade_details_can_be_retrieved_from_repo_by_email(self):
         self.assertEqual("Jade Sola", DoctorsRepository.find_doctor_by_email("jade@gmail.com"))
+    def test_that_all_doctors_details_can_be_retrieved_from_repo_by(self):
+        print(DoctorsRepository.find_all_doctors())
+        self.assertEqual(4, len(DoctorsRepository.find_all_doctors()))
+
