@@ -22,3 +22,11 @@ class PatientService:
         doctor = Doctors.objects.get(doctor_name=doctor_name)
         if doctor is not None:
             DoctorService.view_weekly_appointments_for(doctor_name)
+
+    @staticmethod
+    def book_appointment(patient_name, doctor_name, appointment_day, appointment_date):
+        patient = Patients.objects.get(patient_name=patient_name)
+        doctor = Doctors.objects.get(doctor_name=doctor_name)
+        for index in range(len(doctor.doctor_appointment_details)):
+            if doctor.doctor_appointment_details[index].day == appointment_day and doctor.doctor_appointment_details[index].date == appointment_date:
+                patient.update(set__booked_appointment=Appointment(day=appointment_day, date=appointment_date))
