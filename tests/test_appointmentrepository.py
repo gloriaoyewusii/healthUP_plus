@@ -12,3 +12,5 @@ class TestAppointmentRepository(TestCase):
         self.assertIsNotNone(appointment.date)
         AppointmentRepository.save_appointments_to_repo(appointment)
         AppointmentRepository.save_appointments_to_repo(appointment2)
+    def test_that_all_appointments_can_be_retrieved(self):
+        print(AppointmentRepository.find_all_appointments())

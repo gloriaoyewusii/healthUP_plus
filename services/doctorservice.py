@@ -23,3 +23,14 @@ class DoctorService:
             AppointmentRepository.save_appointments_to_repo(Appointment(day=appointment_day, date=appointment_date))
         except Exception as e:
             print(e)
+
+    @staticmethod
+    def view_created_appointments():
+        try:
+            AppointmentRepository.find_all_appointments()
+        except Exception as e:
+            print(e)
+
+    def __str__(self):
+        return f"Name: {Doctors.doctor_name}\nEmail: {Doctors.doctor_email}\nPassword: {Doctors.doctor_password}"
+
