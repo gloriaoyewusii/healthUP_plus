@@ -2,7 +2,7 @@ import datetime
 
 from data.models.doctors import Doctors
 from data.models.appointments import Appointment
-from repositories.appointmentrepository import AppointmentRepository
+
 from repositories.doctorsrepository import DoctorsRepository
 
 
@@ -18,19 +18,36 @@ class DoctorService:
             print(e)
 
     @staticmethod
-    def create_appointment_time(appointment_day : str, appointment_date : datetime.datetime):
+    def create_appointment_time(name, appointment_day : str, appointment_date : datetime.datetime):
+        appointments = []
         try:
-            AppointmentRepository.save_appointments_to_repo(Appointment(day=appointment_day, date=appointment_date))
+            appointment = DoctorsRepository.save_doctors_open_appointment(name, appointment_day, appointment_date)
+            appointments.append(appointment)
+            print(appointments)
         except Exception as e:
             print(e)
+        # try:
+        #     # appointment_details = Appointment(day=appointment_day, date=appointment_date)
+        #     # Doctors.objects(doctor_name=name).update(doctor_appointment_details=appointment_details)
+        #     DoctorsRepository.save_doctors_open_appointment(Doctors.objects(doctor_name=name).update(set_appointment_day=appointment_day))
+        #     DoctorsRepository.save_doctors_open_appointment(Doctors.objects(doctor_name=name).update(set_appointment_date=appointment_date))
+
+            # AppointmentRepository.save_appointments_to_repo(Appointment(day=appointment_day, date=appointment_date))
+        # except Exception as e:
+        #     print(e)
 
     @staticmethod
-    def view_created_appointments():
-        try:
-            AppointmentRepository.find_all_appointments()
-        except Exception as e:
-            print(e)
+    def view_created_appointments(doctor_name):
+        doctor = Doctors.objects.get(doctor_name=doctor_name)
+        appointments = []
+        length = len(doctor.doctor_appointment_details)
+        for index in range(length):
+            appointments.append(doctor.doctor_appointment_details[index])
+        return appointments
+
+
 
     def __str__(self):
         return f"Name: {Doctors.doctor_name}\nEmail: {Doctors.doctor_email}\nPassword: {Doctors.doctor_password}"
+
 

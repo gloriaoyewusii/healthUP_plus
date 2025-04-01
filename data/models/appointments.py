@@ -1,6 +1,6 @@
-from mongoengine import Document, StringField, DateTimeField
+from mongoengine import StringField, DateTimeField, EmbeddedDocument
 
 
-class Appointment(Document):
+class Appointment(EmbeddedDocument):
     day = StringField()
     date = DateTimeField()

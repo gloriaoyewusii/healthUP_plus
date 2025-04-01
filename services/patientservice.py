@@ -1,23 +1,23 @@
-from data.models import PatientProfile
-from repositories.patientsrepository import Patients
+import datetime
+
+from data.models.doctors import Doctors
+from data.models.patients import Patients
+from data.models.appointments import Appointment
+from repositories.patientsrepository import PatientsRepository
 
 
 class PatientService:
-    def __init__(self):
-        self.patients = Patients()
 
-    def register_as_patient(self, name : str, email : str, password : str, dob : str):
-        patient = (
-            PatientProfile()
-            .set_id()
-            .set_patient_name(name)
-            .set_patient_email(email)
-            .set_patient_password(password)
-            .set_patient_dob(dob)
-            .build()
-        )
-        self.patients.save_patient_to_repo(patient)
+    @staticmethod
+    def register_as_patient(name : str, email : str, password : str):
+        try:
+            patient = Patients(patient_name=name, patient_email=email, patient_password=password)
+            PatientsRepository.save_patient_to_repo(patient)
+        except Exception as e:
+            print(e)
 
-    def find_patient_by_email(self, param):
-        pass
-
+    @staticmethod
+    def view_available_appointments_of_doctor(doctor_name):
+        doctor = Doctors.objects.get(doctor_name=doctor_name)
+        appointments = doctor.doctor_appointment_details
+        return appointments

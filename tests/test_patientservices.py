@@ -5,7 +5,10 @@ from services.patientservice import PatientService
 
 class TestPatientServices(TestCase):
 
-    def test_that_patient_services_of_registration_is_functioning_correctly(self):
+    def test_that_patient_registration_service_is_functioning_correctly(self):
         patient_service = PatientService()
-        patient_service.register_as_patient("John Doe", "johndoey@gmail.com", "passWO1@", "01/12/1990")
-        patient_service.register_as_patient("Janey Doey", "johndoey@gmail.com", "passW1O!", "12/01/1990")
+        patient_service.register_as_patient("John Doe", "johndoey@gmail.com", "passWO1@")
+    def test_that_patient_can_view_available_appointment_timelines(self):
+        patient_service = PatientService()
+        print(patient_service.view_available_appointments_of_doctor("Jade Sola"))
+        # patient_service.register_as_patient("Janey Doey", "johndoey@gmail.com", "passW1O!")
