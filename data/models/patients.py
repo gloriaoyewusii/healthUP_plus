@@ -7,6 +7,6 @@ class Patients(Document):
     patient_name = StringField(required=True)
     patient_email = EmailField(required=True, unique=True)
     patient_password = StringField(required=True)
-    booked_appointment = EmbeddedDocumentListField(Appointment)
+    booked_appointments = EmbeddedDocumentListField(Appointment)
 
 
