@@ -6,6 +6,6 @@ from mongoengine import StringField, DateTimeField, EmbeddedDocument
 
 db = MongoEngine()
 
-class Appointment(EmbeddedDocument):
-    day = StringField()
-    date = DateTimeField()
+class Appointment(db.EmbeddedDocument):
+    day = db.StringField()
+    date = db.DateTimeField()

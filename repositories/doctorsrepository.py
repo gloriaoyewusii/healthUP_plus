@@ -11,6 +11,7 @@ class DoctorsRepository:
     @staticmethod
     def save_doctor_to_repo(doctor):
         doctor.save()
+        return doctor
 
     @staticmethod
     def count():
@@ -29,7 +30,7 @@ class DoctorsRepository:
     @staticmethod
     def find_doctor_by_email(doctor_email : str):
         doctor = Doctors.objects.get(doctor_email=doctor_email)
-        return doctor.doctor_name
+        return doctor
 
     @staticmethod
     def find_all_doctors():
@@ -40,5 +41,5 @@ class DoctorsRepository:
         return all_doctors
 
     @staticmethod
-    def save_doctors_open_appointment(doctor_name, appointment_day, appointment_date : datetime):
-        Doctors.objects(doctor_name=doctor_name).update(push__doctor_appointment_details=Appointment(day=appointment_day, date=appointment_date))
+    def save_doctors_open_appointment(doctor_email, appointment_day:str, appointment_date : datetime):
+        Doctors.objects(doctor_email=doctor_email).update(push__doctor_appointment_details=Appointment(day=appointment_day, date=appointment_date))
