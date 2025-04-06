@@ -1,5 +1,5 @@
 from flask_mongoengine import MongoEngine
-from mongoengine import StringField, EmailField, EmbeddedDocumentField, ListField
+from mongoengine import StringField, EmailField, EmbeddedDocumentField, ListField, DictField
 from data.models.appointments import Appointment
 import bcrypt
 
