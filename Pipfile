@@ -4,10 +4,13 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-flask = "*"
 pymongo = "*"
 bcrypt = "*"
 mongoengine = "*"
+marshmallow = "*"
+flask-marshmallow = "*"
+flask = "*"
+flask-mongoengine-3 = "*"
 
 [dev-packages]
 

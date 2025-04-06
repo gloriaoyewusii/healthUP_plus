@@ -29,4 +29,19 @@ class PatientService:
         doctor = Doctors.objects.get(doctor_name=doctor_name)
         for index in range(len(doctor.doctor_appointment_details)):
             if doctor.doctor_appointment_details[index].day == appointment_day and doctor.doctor_appointment_details[index].date == appointment_date:
-                patient.update(set__booked_appointment=Appointment(day=appointment_day, date=appointment_date))
+                patient.update(push__booked_appointments=Appointment(day=appointment_day, date=appointment_date))
+            # patient.update(push__booked_appointments=None)
+                # raise Exception("Appointment not available")
+
+
+    @staticmethod
+    def view_booked_appointment(patient_name):
+        appointments = []
+        patient = Patients.objects.get(patient_name=patient_name)
+        for index in range(len(patient.booked_appointments)):
+            appointments.append(patient.booked_appointments[index].day)
+            appointments.append(patient.booked_appointments[index].date)
+        print(appointments)
+        return appointments
+
+
