@@ -78,6 +78,19 @@ def register_doctor():
     # return f'Registration failed. Password characters less than 4.'
     # return jsonify({'doctor': doctor_data})
 
+@app.route('/doctors/<doctor_id>', methods=['GET'])
+def get_doctor_by_id(doctor_id):
+    # doctor = Doctors.objects.get_or_404(doctor_email=doctor_email)
+    # doctor_schema = DoctorSchema()
+    # doctor_data = doctor_schema.dump(doctor)
+    # return make_response(jsonify({"doctor":doctor_data}))
+
+    doctor = DoctorsRepository.find_doctor_by_id(doctor_id)
+    # doctor = Doctors.objects.get_or_404(id=ObjectId(doctor_id))
+    doctor_schema = DoctorSchema()
+    serialised_doctor = doctor_schema.dump(doctor)
+    return make_response(jsonify({"doctor":serialised_doctor}), 200)
+
 @app.route('/set_availability', methods=['POST'])
 def set_availability():
     availability_data = request.get_json()
@@ -116,16 +129,6 @@ def register_patient():
     except Exception as e:
         return make_response(jsonify({"error": str(e)}), 400)
 
-
-
-@app.route('/doctors/<doctor_id>/view_open_slots', methods=['GET'])
-def view_open_slots(doctor_id):
-    slot = AvailabilityDetailsRepository.find_availability_details_of_doctor_by_id(doctor_id)
-    availability_details_schema = AvailabilityDetailSchema(many=True)
-    availability_details_data = availability_details_schema.dump(slot)
-    print(slot)
-    return make_response(jsonify(availability_details_data))
-
 @app.route('/patients', methods=['GET'])
 def get_patients():
     patients = Patients.objects.all()
@@ -140,21 +143,27 @@ def get_patient_by_id(patient_id):
     serialised_patient = patient_schema.dump(patient)
     return make_response(jsonify(serialised_patient))
 
-@app.route('/doctors/<doctor_id>', methods=['GET'])
-def get_doctor_by_id(doctor_id):
-    # doctor = Doctors.objects.get_or_404(doctor_email=doctor_email)
-    # doctor_schema = DoctorSchema()
-    # doctor_data = doctor_schema.dump(doctor)
-    # return make_response(jsonify({"doctor":doctor_data}))
 
-    doctor = DoctorsRepository.find_doctor_by_id(doctor_id)
-    # doctor = Doctors.objects.get_or_404(id=ObjectId(doctor_id))
-    doctor_schema = DoctorSchema()
-    serialised_doctor = doctor_schema.dump(doctor)
-    return make_response(jsonify({"doctor":serialised_doctor}), 200)
+@app.route('/doctors/<doctor_id>/view_open_slots', methods=['GET'])
+def view_open_slots(doctor_id):
+    slot = AvailabilityDetailsRepository.find_availability_details_of_doctor_by_id(doctor_id)
+    availability_details_schema = AvailabilityDetailSchema(many=True)
+    availability_details_data = availability_details_schema.dump(slot)
+    print(slot)
+    return make_response(jsonify(availability_details_data))
 
 
-#
+@app.route('/doctors/<doctor_id>/view_open_slots/book_appointment/<availability_id>', methods=['GET'])
+def book_appointment(availability_id):
+    schedule = AvailabilityDetails.objects.get(id=availability_id)
+    if schedule.status != "AVAILABLE":
+        schedule.update(set__status="Pending")
+    elif schedule.status != "PENDING" or schedule.status != "AVAILABLE":
+        schedule.update(set__status="BOOKED")
+    availability_details_schema = AvailabilityDetailSchema()
+    availability_details_data = availability_details_schema.dump(schedule)
+    return make_response(jsonify(availability_details_data))
+
 # @app.route('/create_appointments', methods=['POST'])
 # def create_appointments():
 #     appointment_data = request.get_json()

@@ -1,7 +1,7 @@
 from enum import Enum
 class Status(Enum):
     AVAILABLE = "Available"
-    IN_SESSION = "In Session"
+    PENDING = "Pending"
     ON_BREAK = "On Break"
-    UNAVAILABLE = "Unavailable"
+    BOOKED = "Booked"
 
