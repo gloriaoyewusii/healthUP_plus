@@ -1,13 +1,14 @@
-from mongoengine import connect
 
 from data.models.patients import Patients
+from repositories.patientsinterface import PatientsInterface
 
-connect("healthup_db")
-class PatientsRepository:
+
+class PatientsRepository(PatientsInterface):
 
     @staticmethod
     def save_patient_to_repo(patient : Patients):
         patient.save()
+        return patient
 
     @staticmethod
     def count():
@@ -16,7 +17,7 @@ class PatientsRepository:
 
     @staticmethod
     def delete_patient_from_repo(patient_email : str):
-        Patients.objects(patient_email=patient_email).delete()
+        return Patients.objects(patient_email=patient_email).delete()
 
     @staticmethod
     def find_patient_by_id(patient_id : str):

@@ -18,10 +18,10 @@ class PatientService:
             print(e)
 
     @staticmethod
-    def view_available_appointments_of_doctor(doctor_name):
-        doctor = Doctors.objects.get(doctor_name=doctor_name)
-        if doctor is not None:
-            DoctorService.view_weekly_appointments_for(doctor_name)
+    # def view_available_appointments_of_doctor(doctor_name):
+    #     doctor = Doctors.objects.get(doctor_name=doctor_name)
+    #     if doctor is not None:
+    #         DoctorService.view_weekly_appointments_for(doctor_name)
 
     @staticmethod
     def book_appointment(patient_name, doctor_name, appointment_day, appointment_date):
