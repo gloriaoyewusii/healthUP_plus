@@ -1,10 +1,9 @@
 
 from mongoengine import Document, StringField, EmailField, DateField
 class PatientProfile(Document):
-    name = StringField(required=True)
-    email = EmailField(required=True, unique=True)
-    phone_number = StringField(required=True)
-    address = StringField(required=True)
+    name = StringField(min_length=2, null=False, required=True)
+    phone_number = StringField(null=False, required=True)
+    address = StringField(null=False, required=True)
     date_of_birth = DateField(required=True)
 
 

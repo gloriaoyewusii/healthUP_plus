@@ -1,12 +1,12 @@
 import datetime
 
-from mongoengine import connect
 
 from data.models.appointments import Appointment
 from data.models.doctors import Doctors
+from repositories.doctorsinterface import DoctorsInterface
 
-connect("healthup_db")
-class DoctorsRepository:
+
+class DoctorsRepository(DoctorsInterface):
 
     @staticmethod
     def save_doctor_to_repo(doctor):
@@ -25,7 +25,7 @@ class DoctorsRepository:
     @staticmethod
     def find_doctor_by_id(doctor_id : str):
         doctor = Doctors.objects.get(id=doctor_id)
-        return doctor.doctor_name
+        return doctor
 
     @staticmethod
     def find_doctor_by_email(doctor_email : str):
@@ -42,4 +42,5 @@ class DoctorsRepository:
 
     @staticmethod
     def save_doctors_open_appointment(doctor_email, appointment_day:str, appointment_date : datetime):
-        Doctors.objects(doctor_email=doctor_email).update(push__doctor_appointment_details=Appointment(day=appointment_day, date=appointment_date))
+        doctor = Doctors.objects(doctor_email=doctor_email).update(push__doctor_appointment_details=Appointment(day=appointment_day, date=appointment_date))
+        doctor.save()
