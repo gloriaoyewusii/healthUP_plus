@@ -153,7 +153,11 @@ def get_doctor_by_id(doctor_id):
     serialised_doctor = doctor_schema.dump(doctor)
     return make_response(jsonify({"doctor":serialised_doctor}), 200)
 
-
+@app.route('/doctors/<doctor_id>/pending_requests', methods=['GET'])
+def get_pending_requests(doctor_id):
+    schedules = AvailabilityDetails.objects(doctor_id=doctor_id)
+    if schedules.status == "PENDING":
+        return make_response(jsonify({"schedules":schedules}), 200)
 #
 # @app.route('/create_appointments', methods=['POST'])
 # def create_appointments():
