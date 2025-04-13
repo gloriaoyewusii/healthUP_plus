@@ -1,10 +1,18 @@
+from flask_mongoengine import MongoEngine
+from mongoengine import EnumField
 
-from mongoengine import Document, StringField, EmailField, DateField
-class PatientProfile(Document):
-    name = StringField(min_length=2, null=False, required=True)
-    phone_number = StringField(null=False, required=True)
-    address = StringField(null=False, required=True)
-    date_of_birth = DateField(required=True)
+from data.models.medicalrecord.gender import Gender
+
+db = MongoEngine()
+class PatientProfile(db.Document):
+    patient_id = db.StringField(null=False, required=True)
+    first_name = db.StringField(min_length=2, null=False, required=True)
+    last_name = db.StringField(min_length=2, null=False, required=True)
+    phone_number = db.StringField(null=False, required=True)
+    email = db.EmailField(null=False, required=True, unique=True)
+    address = db.StringField(null=False, required=True)
+    date_of_birth = db.DateField(required=True)
+    gender = EnumField(Gender, required=True)
 
 
     # def __init__(self):

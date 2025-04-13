@@ -1,8 +1,7 @@
 import datetime
 from unittest import TestCase
 from data.models.doctors import Doctors
-from repositories.doctorsrepository import DoctorsRepository
-from services.doctorservice import DoctorService
+from data.repositories import DoctorsRepository
 
 
 class TestDoctorRepository(TestCase):

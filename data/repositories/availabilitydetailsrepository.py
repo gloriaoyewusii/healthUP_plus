@@ -1,5 +1,5 @@
 from data.models.availabilitydetails import AvailabilityDetails
-from repositories.availabilitydetailsinterface import AvailabilityDetailsInterface
+from data.repositories.availabilitydetailsinterface import AvailabilityDetailsInterface
 
 
 class AvailabilityDetailsRepository(AvailabilityDetailsInterface):

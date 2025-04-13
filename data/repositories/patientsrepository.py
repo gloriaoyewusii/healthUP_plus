@@ -1,6 +1,6 @@
 
 from data.models.patients import Patients
-from repositories.patientsinterface import PatientsInterface
+from data.repositories.patientsinterface import PatientsInterface
 
 
 class PatientsRepository(PatientsInterface):
@@ -16,25 +16,25 @@ class PatientsRepository(PatientsInterface):
         return count
 
     @staticmethod
-    def delete_patient_from_repo(patient_email : str):
-        return Patients.objects(patient_email=patient_email).delete()
+    def delete_patient_from_repo(patient_id):
+        return Patients.objects(id=patient_id).delete()
 
     @staticmethod
     def find_patient_by_id(patient_id : str):
         patient = Patients.objects.get(id=patient_id)
-        return f"{patient.patient_name}" + "\n" + f"{patient.patient_email}"
-
+        return patient
     @staticmethod
     def find_patient_by_email(patient_email: str):
         patient = Patients.objects.get(patient_email=patient_email)
-        return f"Name: {patient.patient_name}" + "\n" + f"Email: {patient.patient_email}"
-
+        return patient
     @staticmethod
     def find_all_patients():
-        all_patients = []
-        patients = Patients.objects()
-        for patient in patients:
-            all_patients.append(patient.patient_name)
+        all_patients = Patients.objects.all()
         return all_patients
+        # all_patients = []
+        # patients = Patients.objects()
+        # for patient in patients:
+        #     all_patients.append(patient.patient_name)
+        # return all_patients
 
 

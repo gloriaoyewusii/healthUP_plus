@@ -3,7 +3,7 @@ import datetime
 
 from data.models.appointments import Appointment
 from data.models.doctors import Doctors
-from repositories.doctorsinterface import DoctorsInterface
+from data.repositories.doctorsinterface import DoctorsInterface
 
 
 class DoctorsRepository(DoctorsInterface):
