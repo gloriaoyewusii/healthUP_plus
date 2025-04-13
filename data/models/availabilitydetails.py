@@ -8,7 +8,7 @@ class AvailabilityDetails(db.Document):
     date = db.DateField(required=True, null=False)
     start_time = db.StringField(required=True, null=False)
     end_time = db.StringField(required=True, null=False)
-    status = EnumField(Status, default=Status.AVAILABLE)
+    status = EnumField(Status, default=Status.AVAILABLE, required=True)
     # booked_by = db.StringField(required=True, null=False)
     doctor_id = db.StringField(required=True, null=False)
     # doctor_name = db.StringField(required=True, null=False)

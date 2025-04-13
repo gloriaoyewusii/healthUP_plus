@@ -2,20 +2,21 @@ from datetime import datetime
 
 from flask import Flask, request, jsonify, make_response
 from flask_mongoengine import MongoEngine
-from marshmallow import Schema, fields, post_load
+from marshmallow import Schema, fields
 from bson import ObjectId
 
 from data.models.appointments import Appointment
 from data.models.availabilitydetails import AvailabilityDetails
+from data.models.medicalrecord.patientinformation import PatientProfile
 from data.models.patients import Patients
+from data.models.status import Status
 from data.schemas.appointmentschema import AppointmentSchema
 from data.schemas.availabilitydetailschema import AvailabilityDetailSchema
+from data.schemas.patientprofileschema import PatientProfileSchema
 from data.schemas.patientschema import PatientSchema
-from repositories.availabilitydetailsrepository import AvailabilityDetailsRepository
 from services.doctorservice import DoctorService
-from repositories.doctorsrepository import DoctorsRepository
+from data.repositories.doctorsrepository import DoctorsRepository
 
-from data.models import doctors
 from data.models.doctors import Doctors
 from data.schemas.doctorschema import DoctorSchema
 import bcrypt
@@ -146,23 +147,89 @@ def get_patient_by_id(patient_id):
 
 @app.route('/doctors/<doctor_id>/view_open_slots', methods=['GET'])
 def view_open_slots(doctor_id):
-    slot = AvailabilityDetailsRepository.find_availability_details_of_doctor_by_id(doctor_id)
-    availability_details_schema = AvailabilityDetailSchema(many=True)
-    availability_details_data = availability_details_schema.dump(slot)
-    print(slot)
-    return make_response(jsonify(availability_details_data))
+   try:
+       open_slots = AvailabilityDetails.objects(doctor_id=doctor_id, status=Status.AVAILABLE)
+       if open_slots:
+           open_slots_schema = AvailabilityDetailSchema(many=True)
+           open_slots_data = open_slots_schema.dump(open_slots)
+           return make_response(jsonify({"Open Slots": open_slots_data}))
+       else:
+           return make_response(jsonify({"No Open Slots Available"}))
+   except Exception as e:
+       return make_response(jsonify({"error": str(e)}), 400)
 
 
-@app.route('/doctors/<doctor_id>/view_open_slots/book_appointment/<availability_id>', methods=['GET'])
+@app.route('/view_open_slots/book_appointment/<availability_id>', methods=['PUT'])
 def book_appointment(availability_id):
-    schedule = AvailabilityDetails.objects.get(id=availability_id)
-    if schedule.status != "AVAILABLE":
-        schedule.update(set__status="Pending")
-    elif schedule.status != "PENDING" or schedule.status != "AVAILABLE":
-        schedule.update(set__status="BOOKED")
-    availability_details_schema = AvailabilityDetailSchema()
-    availability_details_data = availability_details_schema.dump(schedule)
-    return make_response(jsonify(availability_details_data))
+    try:
+        available_schedule = AvailabilityDetails.objects.get(id=availability_id, status=Status.AVAILABLE)
+        if available_schedule.status == Status.AVAILABLE:
+            available_schedule.update(set__status="Pending")
+            available_schedule.reload()
+        return make_response(jsonify({f"Appointment status":available_schedule.status.value}))
+    except Exception as e:
+        return f"Appointment slot not available for booking"
+    # return make_response(jsonify({f"Appointment status" : available_schedule.status.value}))
+@app.route('/approve_request/<availability_id>', methods=['PUT'])
+def approve_request(availability_id):
+    try:
+        pending_request = AvailabilityDetails.objects.get(id=availability_id, status=Status.PENDING)
+        if pending_request.status == Status.PENDING:
+            pending_request.update(set__status="Booked")
+            pending_request.reload()
+        return make_response(jsonify({f"Appointment status":pending_request.status.value}))
+    except Exception as e:
+        return f"Appointment slot not available for booking"
+
+@app.route('/reject_request/<availability_id>', methods=['PUT'])
+def reject_request(availability_id):
+    try:
+        pending_request = AvailabilityDetails.objects.get(id=availability_id, status=Status.PENDING)
+        if pending_request.status == Status.PENDING:
+            pending_request.update(set__status="Not Available")
+            pending_request.reload()
+        return make_response(jsonify({f"Appointment status": pending_request.status.value}))
+    except Exception as e:
+        return f"Appointment slot not available for booking"
+
+@app.route('/create-patient-profile', methods=['POST'])
+def create_patient_profile():
+    patient_profile = request.json
+
+    patient_id = patient_profile.get('patient_id')
+    first_name = patient_profile.get('first_name')
+    last_name = patient_profile.get('last_name')
+    email = patient_profile.get('email')
+    phone_number = patient_profile.get('phone_number')
+    address = patient_profile.get('address')
+    date_of_birth = patient_profile.get('date_of_birth')
+    gender = patient_profile.get('gender')
+
+    try:
+        PatientService.create_patient_profile(patient_id, first_name, last_name, phone_number, email, address, date_of_birth, gender)
+        patient_profile = PatientProfile.objects.get(patient_id=patient_id)
+        patient_schema = PatientProfileSchema()
+        patient_data = patient_schema.dump(patient_profile)
+        return make_response(jsonify({"Patient Profile":patient_data}), 201)
+    except Exception as e:
+        return make_response(jsonify({"error": str(e)}), 400)
+
+@app.route('/find-patient-profile/<profile_id>', methods=['GET'])
+def find_patient_profile(profile_id):
+    patient_profile = PatientService.find_patient_profile(profile_id)
+    patient_profile_schema = PatientProfileSchema()
+    patient_profile_data = patient_profile_schema.dump(patient_profile)
+    return make_response(jsonify(patient_profile_data))
+@app.route('/update-patient-profile/<profile_id>', methods=['PUT'])
+def update_patient_profile(profile_id):
+    patient_profile = PatientService.find_patient_profile(profile_id)
+    update = request.json
+    for field, value in update.items():
+        if field in patient_profile.keys():
+            patient_profile[field] = value
+    patient_profile_schema = PatientProfileSchema()
+    updated_profile = patient_profile_schema.dump(patient_profile)
+    return make_response(jsonify(updated_profile))
 
 # @app.route('/create_appointments', methods=['POST'])
 # def create_appointments():
@@ -191,6 +258,13 @@ def book_appointment(availability_id):
 #     # serialised_doctor.doctor_appointment_details = {"day":appointment_day, "date": date}
 #
 #     # return make_response(jsonify({"doctor":serialised_doctor}), 201)
+
+@app.route('/doctors/<doctor_id>/pending-requests', methods=['GET'])
+def get_pending_requests(doctor_id):
+    pending_requests = AvailabilityDetails.objects(doctor_id=doctor_id, status=Status.PENDING)
+    availability_details_schema = AvailabilityDetailSchema(many=True)
+    availability_details_data = availability_details_schema.dump(pending_requests)
+    return make_response(jsonify(availability_details_data))
 
 @app.route('/appointments/<doctor_id>', methods=["GET"])
 def view_appointments(doctor_id):

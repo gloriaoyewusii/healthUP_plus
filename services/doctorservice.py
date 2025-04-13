@@ -1,12 +1,9 @@
-import datetime
-
 from data.models.availabilitydetails import AvailabilityDetails
 from data.models.doctors import Doctors
 from data.models.appointments import Appointment
-from repositories.appointmentrepository import AppointmentRepository
-from repositories.availabilitydetailsrepository import AvailabilityDetailsRepository
+from data.repositories.availabilitydetailsrepository import AvailabilityDetailsRepository
 
-from repositories.doctorsrepository import DoctorsRepository
+from data.repositories.doctorsrepository import DoctorsRepository
 
 
 class DoctorService:
