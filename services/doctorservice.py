@@ -1,9 +1,11 @@
 from data.models.availabilitydetails import AvailabilityDetails
 from data.models.doctors import Doctors
 from data.models.appointments import Appointment
+from data.models.medicalrecord.therapyinformation import TherapyInformation
 from data.repositories.availabilitydetailsrepository import AvailabilityDetailsRepository
 
 from data.repositories.doctorsrepository import DoctorsRepository
+from data.repositories.therapyinforepository import TherapyRepository
 
 
 class DoctorService:
@@ -25,6 +27,27 @@ class DoctorService:
             return AvailabilityDetailsRepository.save_availability_details_to_repo(availability_details)
         except Exception as e:
             print(e)
+
+    @staticmethod
+    def create_therapy_info(therapy_data):
+        therapy_info = TherapyInformation(**therapy_data)
+        return TherapyRepository.save_therapy_info_to_repo(therapy_info)
+
+    @staticmethod
+    def find_patient_therapy_record(therapy_id):
+        therapy_record = TherapyRepository.find_therapy_info_of_patient_by_id(therapy_id)
+        return therapy_record
+
+    @staticmethod
+    def update_therapy_info(therapy_id, **therapy_data):
+        therapy_info = TherapyRepository.find_therapy_info_of_patient_by_id(therapy_id)
+        for field, value in therapy_data.items():
+            if hasattr(therapy_info, field):
+                setattr(therapy_info, field, value)
+        TherapyRepository.save_therapy_info_to_repo(therapy_info)
+        return therapy_info
+
+
 
 
 
