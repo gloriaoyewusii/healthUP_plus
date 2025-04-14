@@ -30,12 +30,10 @@ class PatientProfileRepository(PatientInterface):
         all_patient_profiles = PatientProfile.objects.all()
         return all_patient_profiles
     @staticmethod
-    def update_patient_profile(profile_id):
-        patient_profile = PatientProfile.objects.get(id=profile_id)
-        update = request.json()
-        for key, value in update.items():
-            if hasattr(patient_profile, key):
-                setattr(patient_profile, key, value)
-        patient_profile.save()
-        return patient_profile
+    def update_profile(profile_id, field, value):
+        profile = PatientProfileRepository.find_patient_profile_by_id(profile_id)
+        if hasattr(profile, field):
+            setattr(profile, field, value)
+        profile.save()
+        return profile
 

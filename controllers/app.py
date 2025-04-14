@@ -2,7 +2,7 @@ from datetime import datetime
 
 from flask import Flask, request, jsonify, make_response
 from flask_mongoengine import MongoEngine
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, ValidationError
 from bson import ObjectId
 
 from data.models.appointments import Appointment
@@ -10,10 +10,12 @@ from data.models.availabilitydetails import AvailabilityDetails
 from data.models.medicalrecord.patientinformation import PatientProfile
 from data.models.patients import Patients
 from data.models.status import Status
+from data.repositories.patientprofilerepository import PatientProfileRepository
 from data.schemas.appointmentschema import AppointmentSchema
 from data.schemas.availabilitydetailschema import AvailabilityDetailSchema
 from data.schemas.patientprofileschema import PatientProfileSchema
 from data.schemas.patientschema import PatientSchema
+from data.schemas.therapyinformationschema import TherapyInformationSchema
 from services.doctorservice import DoctorService
 from data.repositories.doctorsrepository import DoctorsRepository
 
@@ -194,7 +196,7 @@ def reject_request(availability_id):
 
 @app.route('/create-patient-profile', methods=['POST'])
 def create_patient_profile():
-    patient_profile = request.json
+    patient_profile = request.get_json()
 
     patient_id = patient_profile.get('patient_id')
     first_name = patient_profile.get('first_name')
@@ -220,16 +222,59 @@ def find_patient_profile(profile_id):
     patient_profile_schema = PatientProfileSchema()
     patient_profile_data = patient_profile_schema.dump(patient_profile)
     return make_response(jsonify(patient_profile_data))
-@app.route('/update-patient-profile/<profile_id>', methods=['PUT'])
-def update_patient_profile(profile_id):
-    patient_profile = PatientService.find_patient_profile(profile_id)
-    update = request.json
-    for field, value in update.items():
-        if field in patient_profile.keys():
-            patient_profile[field] = value
-    patient_profile_schema = PatientProfileSchema()
-    updated_profile = patient_profile_schema.dump(patient_profile)
-    return make_response(jsonify(updated_profile))
+@app.route('/create-therapy-info', methods=['POST'])
+def create_therapy_info():
+    try:
+        therapy_data = request.get_json()
+        therapy_schema = TherapyInformationSchema()
+        validated_data = therapy_schema.load(therapy_data)
+        therapy_info = DoctorService.create_therapy_info(validated_data)
+        therapy_details = therapy_schema.dump(therapy_info)
+        return make_response(jsonify(therapy_details), 201)
+    except ValidationError as e:
+        return make_response(jsonify({"error": str(e.messages)}), 400)
+
+@app.route('/find-therapy-record/<therapy_id>', methods=['GET'])
+def find_therapy_record(therapy_id):
+    try:
+        therapy_record = DoctorService.find_patient_therapy_record(therapy_id)
+        therapy_schema = TherapyInformationSchema()
+        therapy_details = therapy_schema.dump(therapy_record)
+        return make_response(jsonify(therapy_details), 201)
+    except ValidationError as e:
+        return make_response(jsonify({"error": str(e.messages)}), 400)
+
+@app.route('/update-therapy-record/<therapy_id>', methods=['PUT'])
+def update_therapy_record(therapy_id):
+    try:
+        therapy_data = request.get_json()
+        therapy_schema = TherapyInformationSchema(partial=True)
+        validated_data = therapy_schema.load(therapy_data)
+        therapy_record = DoctorService.update_therapy_info(therapy_id, **validated_data)
+        therapy_details = therapy_schema.dump(therapy_record)
+        return make_response(jsonify(therapy_details), 200)
+    except ValidationError as e:
+        return make_response(jsonify({"error": str(e.messages)}), 400)
+
+
+    # therapy_record = therapy_schema.dump(validated_data)
+    # therapy_record = DoctorService.find_patient_therapy_record(therapy_id)
+
+    # return make_response(jsonify(therapy_record), 200)
+
+# @app.route('/update-patient-profile/<profile_id>', methods=['PUT'])
+# def update_patient_profile(profile_id):
+#     update = request.json
+#     profile = PatientService.find_patient_profile(profile_id)
+#
+    # field = ""
+    # value = ""
+    # updated_profile = PatientService.update_patient_profile(profile_id, field, value)
+    # patient_profile_schema = PatientProfileSchema()
+    # updated_profile_data = patient_profile_schema.dump(updated_profile)
+    # return make_response(jsonify(updated_profile_data))
+
+
 
 # @app.route('/create_appointments', methods=['POST'])
 # def create_appointments():
