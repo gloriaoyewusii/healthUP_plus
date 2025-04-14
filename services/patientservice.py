@@ -22,6 +22,7 @@ class PatientService:
             PatientsRepository.save_patient_to_repo(patient)
         except Exception as e:
             print(e)
+            
 
     @staticmethod
     def create_patient_profile(patient_id:str, first_name : str, last_name : str, phone_number : str, email : str, address : str, date_of_birth  :str, gender : Gender):
@@ -39,12 +40,12 @@ class PatientService:
         except Exception as e:
             print(e)
     @staticmethod
-    def update_patient_profile(profile_id):
+    def update_patient_profile(profile_id, field, value):
         try:
-            profile = PatientProfileRepository.update_patient_profile(profile_id)
-            return profile
+            return PatientProfileRepository.update_profile(profile_id, field, value)
         except Exception as e:
             print(e)
+
     @staticmethod
     def book_appointment(patient_name, doctor_name, appointment_day, appointment_date):
         patient = Patients.objects.get(patient_name=patient_name)
