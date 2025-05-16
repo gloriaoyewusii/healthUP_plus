@@ -13,6 +13,7 @@ from data.models.status import Status
 from data.repositories.patientprofilerepository import PatientProfileRepository
 from data.schemas.appointmentschema import AppointmentSchema
 from data.schemas.availabilitydetailschema import AvailabilityDetailSchema
+# from data.schemas.medicalrecordschema import MedicalRecordSchema
 from data.schemas.patientprofileschema import PatientProfileSchema
 from data.schemas.patientschema import PatientSchema
 from data.schemas.therapyinformationschema import TherapyInformationSchema
@@ -24,6 +25,7 @@ from data.schemas.doctorschema import DoctorSchema
 import bcrypt
 
 from services.patientservice import PatientService
+from flask_cors import CORS
 
 
 def hash_password(password):
@@ -45,6 +47,8 @@ app.config['MONGODB_SETTINGS'] = {
 db = MongoEngine(app)
 
 Schema.TYPE_MAPPING[ObjectId] = fields.String
+
+CORS(app, origins=["http://localhost:5173"])
 
 
 @app.route('/', methods=['GET'])
@@ -115,9 +119,9 @@ def set_availability():
 def register_patient():
     patient_data = request.get_json()
 
-    patient_name = patient_data.get('patient_name')
-    patient_email = patient_data.get('patient_email')
-    patient_password = patient_data.get('patient_password')
+    patient_name = patient_data.get('name')
+    patient_email = patient_data.get('email')
+    patient_password = patient_data.get('password')
 
     hashed_patient_password = hash_password(patient_password)
 
@@ -196,25 +200,33 @@ def reject_request(availability_id):
 
 @app.route('/create-patient-profile', methods=['POST'])
 def create_patient_profile():
-    patient_profile = request.get_json()
-
-    patient_id = patient_profile.get('patient_id')
-    first_name = patient_profile.get('first_name')
-    last_name = patient_profile.get('last_name')
-    email = patient_profile.get('email')
-    phone_number = patient_profile.get('phone_number')
-    address = patient_profile.get('address')
-    date_of_birth = patient_profile.get('date_of_birth')
-    gender = patient_profile.get('gender')
+    # patient_profile = request.get_json()
+    #
+    # patient_id = patient_profile.get('patient_id')
+    # first_name = patient_profile.get('first_name')
+    # last_name = patient_profile.get('last_name')
+    # email = patient_profile.get('email')
+    # phone_number = patient_profile.get('phone_number')
+    # address = patient_profile.get('address')
+    # date_of_birth = patient_profile.get('date_of_birth')
+    # gender = patient_profile.get('gender')
 
     try:
-        PatientService.create_patient_profile(patient_id, first_name, last_name, phone_number, email, address, date_of_birth, gender)
-        patient_profile = PatientProfile.objects.get(patient_id=patient_id)
-        patient_schema = PatientProfileSchema()
-        patient_data = patient_schema.dump(patient_profile)
-        return make_response(jsonify({"Patient Profile":patient_data}), 201)
-    except Exception as e:
-        return make_response(jsonify({"error": str(e)}), 400)
+        patient_profile = request.get_json()
+        patient_profile_schema = PatientProfileSchema()
+        validated_data = patient_profile_schema.load(patient_profile)
+        profile_info = DoctorService.create_patient_profile(validated_data)
+        profile_details = patient_profile_schema.dump(profile_info)
+        return make_response(jsonify(profile_details))
+    except ValidationError as e:
+        return make_response(jsonify({"error": str(e.messages)}), 400)
+    #     PatientService.create_patient_profile(patient_id, first_name, last_name, phone_number, email, address, date_of_birth, gender)
+    #     patient_profile = PatientProfile.objects.get(patient_id=patient_id)
+    #     patient_schema = PatientProfileSchema()
+    #     patient_data = patient_schema.dump(patient_profile)
+    #     return make_response(jsonify({"Patient Profile":patient_data}), 201)
+    # except Exception as e:
+    #     return make_response(jsonify({"error": str(e)}), 400)
 
 @app.route('/find-patient-profile/<profile_id>', methods=['GET'])
 def find_patient_profile(profile_id):
@@ -256,16 +268,31 @@ def update_therapy_record(therapy_id):
     except ValidationError as e:
         return make_response(jsonify({"error": str(e.messages)}), 400)
 
+@app.route('/update-patient-profile/<profile_id>', methods=['PUT'])
+def update_patient_profile(profile_id):
+    try:
+        profile_data = request.get_json()
+        profile_schema = PatientProfileSchema(partial=True)
+        validated_data = profile_schema.load(profile_data)
+        profile_record = DoctorService.update_patient_profile(profile_id, **validated_data)
+        profile_details = profile_schema.dump(profile_record)
+        return make_response(jsonify(profile_details), 200)
+    except ValidationError as e:
+        return make_response(jsonify({"error": str(e.messages)}), 400)
 
-    # therapy_record = therapy_schema.dump(validated_data)
-    # therapy_record = DoctorService.find_patient_therapy_record(therapy_id)
 
-    # return make_response(jsonify(therapy_record), 200)
+@app.route('/create-medical-record', methods=['POST'])
+def create_medical_record():
+    try:
+        record_ids = request.get_json()
+        medical_record_schema = MedicalRecordSchema()
+        validated_data = medical_record_schema.load(record_ids)
+        med_records = DoctorService.create_medical_record(validated_data)
+        records = medical_record_schema.dump(med_records)
+        return make_response(jsonify(records), 201)
+    except ValidationError as e:
+        return make_response(jsonify({"error": str(e.messages)}), 400)
 
-# @app.route('/update-patient-profile/<profile_id>', methods=['PUT'])
-# def update_patient_profile(profile_id):
-#     update = request.json
-#     profile = PatientService.find_patient_profile(profile_id)
 #
     # field = ""
     # value = ""

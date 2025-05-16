@@ -7,6 +7,8 @@ class TherapyInformation(db.Document):
     start_time = db.StringField()
     end_time = db.StringField()
     number_of_sessions = db.StringField()
+    patient_name = db.StringField()
+    patient_id = db.StringField()
     therapist_name = db.StringField()
     therapist_id = db.StringField()
     therapy_goal = db.StringField()

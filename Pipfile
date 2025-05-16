@@ -11,6 +11,7 @@ marshmallow = "*"
 flask-marshmallow = "*"
 flask = "*"
 flask-mongoengine-3 = "*"
+flask-cors = "*"
 
 [dev-packages]
 

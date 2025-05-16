@@ -1,10 +1,14 @@
 from data.models.availabilitydetails import AvailabilityDetails
 from data.models.doctors import Doctors
 from data.models.appointments import Appointment
+# from data.models.medicalrecord.medicalrecord import MedicalRecord
+from data.models.medicalrecord.patientinformation import PatientProfile
 from data.models.medicalrecord.therapyinformation import TherapyInformation
 from data.repositories.availabilitydetailsrepository import AvailabilityDetailsRepository
 
 from data.repositories.doctorsrepository import DoctorsRepository
+from data.repositories.medicalrecordrepository import MedicalRecordRepository
+from data.repositories.patientprofilerepository import PatientProfileRepository
 from data.repositories.therapyinforepository import TherapyRepository
 
 
@@ -29,6 +33,20 @@ class DoctorService:
             print(e)
 
     @staticmethod
+    def create_patient_profile(profile_data):
+        profile_info = PatientProfile(**profile_data)
+        return PatientProfileRepository.save_patient_profile_to_repo(profile_info)
+
+    @staticmethod
+    def update_patient_profile(profile_id, **profile_data):
+        patient_profile = PatientProfileRepository.find_patient_profile_by_id(profile_id)
+        for field, value in profile_data.items():
+            if hasattr(patient_profile, field):
+                setattr(patient_profile, field, value)
+        PatientProfileRepository.save_patient_profile_to_repo(patient_profile)
+        return patient_profile
+
+    @staticmethod
     def create_therapy_info(therapy_data):
         therapy_info = TherapyInformation(**therapy_data)
         return TherapyRepository.save_therapy_info_to_repo(therapy_info)
@@ -48,7 +66,10 @@ class DoctorService:
         return therapy_info
 
 
-
+    @staticmethod
+    def create_medical_record(record_ids):
+        medical_record = MedicalRecord(**record_ids)
+        return MedicalRecordRepository.save_medical_record_to_repo(medical_record)
 
 
     # @staticmethod

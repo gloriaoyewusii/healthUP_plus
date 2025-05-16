@@ -6,7 +6,7 @@ from data.models.medicalrecord.therapyinformation import TherapyInformation
 class TherapyInformationSchema(Schema):
     class Meta:
         model = TherapyInformation
-        fields = ('id', 'therapy_type', 'therapy_reason', "date", "start_time", "end_time", "number_of_sessions", "therapist_name", "therapist_id", "therapy_goal", "treatment_plan",
+        fields = ('id', 'therapy_type', 'therapy_reason', "date", "start_time", "end_time", "number_of_sessions", "patient_name", "patient_id", "therapist_name", "therapist_id", "therapy_goal", "treatment_plan",
                   "successful_outcome", "therapy_notes")
 
     id = fields.String(dump_only=True)
@@ -16,6 +16,8 @@ class TherapyInformationSchema(Schema):
     start_time = fields.String(required=True, format="%H:%M")
     end_time = fields.String(required=True, format="%H:%M")
     number_of_sessions = fields.String(required=True)
+    patient_name = fields.String(required=True)
+    patient_id = fields.String(required=True)
     therapist_name = fields.String(required=True)
     therapist_id = fields.String(required=True, load_only=True)
     therapy_goal = fields.String(required=True)
